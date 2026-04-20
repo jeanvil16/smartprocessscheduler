@@ -1,0 +1,17 @@
+{
+  "express": [
+    "SELECT id, email FROM users WHERE id = 42;",
+    "SELECT plan FROM subscriptions WHERE user_id = 7;",
+    "SELECT COUNT(*) FROM orders WHERE status = 'pending';"
+  ],
+  "standard": [
+    "SELECT u.id, u.email, s.plan FROM users u JOIN subscriptions s ON s.user_id = u.id WHERE s.status = 'active';",
+    "SELECT o.id, o.total_amount, u.email FROM orders o JOIN users u ON u.id = o.user_id WHERE o.created_at >= NOW() - INTERVAL '7 days';",
+    "SELECT p.id, p.name, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id WHERE p.is_active = TRUE;"
+  ],
+  "batch": [
+    "SELECT u.country, SUM(o.total_amount) AS revenue FROM users u JOIN orders o ON o.user_id = u.id JOIN order_items oi ON oi.order_id = o.id JOIN products p ON p.id = oi.product_id WHERE o.created_at >= NOW() - INTERVAL '180 days' GROUP BY u.country ORDER BY revenue DESC;",
+    "SELECT p.name, COUNT(*) AS units_sold, AVG(oi.price) AS avg_price FROM products p JOIN order_items oi ON oi.product_id = p.id JOIN orders o ON o.id = oi.order_id WHERE o.status = 'completed' GROUP BY p.name HAVING COUNT(*) > 10 ORDER BY units_sold DESC;",
+    "SELECT u.id, u.email, COUNT(o.id) AS order_count, SUM(o.total_amount) AS lifetime_value FROM users u LEFT JOIN orders o ON o.user_id = u.id GROUP BY u.id, u.email ORDER BY lifetime_value DESC NULLS LAST;"
+  ]
+}
